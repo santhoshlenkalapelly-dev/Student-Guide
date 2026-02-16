@@ -1,0 +1,23 @@
+package com.studentprep.test;
+
+import com.studentprep.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EvaluationServiceTest {
+
+    private Student mkStudent(int avg, int l, int d, int c, int s) {
+        Student st = new Student();
+        AcademicRecord ar = new AcademicRecord();
+        // Four subjects with same mark to keep average == avg
+        ar.addMark(10, "Maths", avg);
+        ar.addMark(10, "Physics", avg);
+        ar.addMark(10, "Chemistry", avg);
+        ar.addMark(10, "Biology", avg);
+        st.setAcademicRecord(ar);
+
+        SkillProfile k = new SkillProfile();
+        k.setLogic(l); k.setDiscipline(d); k.setConfidence(c); k.setConsistency(s);
+        st.setSkills(k);
+        return st;
+    }
