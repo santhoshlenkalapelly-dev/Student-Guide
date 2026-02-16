@@ -1,0 +1,65 @@
+package com.studentprep.test;
+
+import com.studentprep.ConsoleIO;
+import com.studentprep.StateBoard;
+import com.studentprep.TargetExam;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class TestConsoleIO extends ConsoleIO {
+    public final StringBuilder out = new StringBuilder();
+
+    public final Deque<String> names = new ArrayDeque<>();
+    public final Deque<Integer> ints = new ArrayDeque<>();
+    public final Deque<LocalDate> dates = new ArrayDeque<>();
+    public final Deque<LocalTime> times = new ArrayDeque<>();
+    public final Deque<Boolean> yesNo = new ArrayDeque<>();
+    public final Deque<StateBoard> boards = new ArrayDeque<>();
+    public final Deque<TargetExam> exams = new ArrayDeque<>();
+    public final Deque<Integer> marks = new ArrayDeque<>();
+    public final Deque<String> nonEmpty = new ArrayDeque<>();
+
+    @Override public void println(String s) { out.append(s).append('\n'); }
+    @Override public void print(String s)   { out.append(s); }
+
+    @Override public String readNonEmpty(String prompt) {
+        if (!nonEmpty.isEmpty()) return nonEmpty.removeFirst();
+        if (!names.isEmpty()) return names.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no nonEmpty/name value queued");
+    }
+    @Override public String readStudentName(String prompt) {
+        if (!names.isEmpty()) return names.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no name queued");
+    }
+    @Override public int readIntInRange(String prompt, int min, int max) {
+        if (!ints.isEmpty()) return ints.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no int queued");
+    }
+    @Override public int readMark(String subject) {
+        if (!marks.isEmpty()) return marks.removeFirst();
+        return 80;
+    }
+    @Override public StateBoard readStateBoard(String prompt) {
+        if (!boards.isEmpty()) return boards.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no state board queued");
+    }
+    @Override public TargetExam readTargetExam(String prompt) {
+        if (!exams.isEmpty()) return exams.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no exam queued");
+    }
+    @Override public LocalDate readDate(String prompt) {
+        if (!dates.isEmpty()) return dates.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no date queued");
+    }
+    @Override public LocalTime readTime(String prompt) {
+        if (!times.isEmpty()) return times.removeFirst();
+        throw new IllegalStateException("TestConsoleIO: no time queued");
+    }
+    @Override public boolean readYesNo(String prompt) {
+        if (!yesNo.isEmpty()) return yesNo.removeFirst();
+        return false;
+    }
+}
