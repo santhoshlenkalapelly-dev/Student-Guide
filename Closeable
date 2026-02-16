@@ -1,0 +1,27 @@
+package com.studentprep.test;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public final class TestIO implements Closeable {
+    private final InputStream originalIn = System.in;
+    private final PrintStream originalOut = System.out;
+
+    private final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
+
+    public TestIO(String scriptedInput) {
+        System.setIn(new ByteArrayInputStream(scriptedInput.getBytes(StandardCharsets.UTF_8)));
+        System.setOut(new PrintStream(outBuffer, true, StandardCharsets.UTF_8));
+    }
+
+    public String getOutput() {
+        return outBuffer.toString(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public void close() {
+        System.setIn(originalIn);
+        System.setOut(originalOut);
+        try { outBuffer.close(); } catch (IOException ignored) {}
+    }
+}
