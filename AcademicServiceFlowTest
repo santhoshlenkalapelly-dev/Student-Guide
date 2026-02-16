@@ -1,0 +1,40 @@
+package com.studentprep.test;
+
+import com.studentprep.*;
+import org.junit.jupiter.api.Test;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class AcademicServiceFlowTest {
+    @Test
+    void class7_promptsOnlyMathsAndScience() {
+        Student s = new Student();
+        s.setName("Sai"); s.setAge(16); s.setCurrentClass(7);
+        s.setStateBoard(StateBoard.TS); s.setTargetExam(TargetExam.JEE);
+
+        TestConsoleIO io = new TestConsoleIO(); // marks default to 80
+        AcademicRecord rec = AcademicService.collectMarks(s, io);
+
+        Map<Integer, Map<String, Integer>> marks = rec.getMarks();
+        assertEquals(Map.of("Mathematics", 80, "Science", 80), marks.get(6));
+        assertEquals(Map.of("Mathematics", 80, "Science", 80), marks.get(7));
+        assertFalse(marks.get(6).containsKey("Physics"));
+        assertFalse(marks.get(7).containsKey("Chemistry"));
+    }
+
+    @Test
+    void class8_neet_hasBioPhyChem() {
+        Student s = new Student();
+        s.setName("Anu"); s.setAge(18); s.setCurrentClass(8);
+        s.setStateBoard(StateBoard.AP); s.setTargetExam(TargetExam.NEET);
+
+        TestConsoleIO io = new TestConsoleIO();
+        AcademicRecord rec = AcademicService.collectMarks(s, io);
+
+        var cls8 = rec.getMarks().get(8);
+        assertTrue(cls8.containsKey("Biology"));
+        assertTrue(cls8.containsKey("Physics"));
+        assertTrue(cls8.containsKey("Chemistry"));
+        assertFalse(cls8.containsKey("Maths"));
+    }
+}
