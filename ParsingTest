@@ -1,0 +1,14 @@
+package com.studentprep.test;
+
+import com.studentprep.StateBoard;
+import com.studentprep.TargetExam;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ParsingTest {
+
+    @Test
+    void stateBoard_parse_allowsSynonyms() {
+        assertEquals(StateBoard.TS, StateBoard.parse("TS"));
+        assertEquals(StateBoard.TS, StateBoard.parse("Telangana"));
+        assertEquals(StateBoard.TS, StateBoard.parse("Telangana State"));
