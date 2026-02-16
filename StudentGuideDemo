@@ -1,0 +1,226 @@
+package com.webpagetesting;
+ 
+import org.openqa.selenium.*;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.*;
+ 
+import java.io.File;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+ 
+public class StudentGuideDemo {
+ 
+    // ==== UPDATE THESE TWO PATHS ====
+    private static final String EDGE_DRIVER_EXE = "C:\\Users\\lenkalapelly.santh\\Downloads\\edgedriver_win64\\msedgedriver.exe\\";
+    private static final String HTML_FILE_PATH  = "C:\\Users\\lenkalapelly.santh\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HTML\\Studentguide.html";
+ 
+    private static WebDriver driver;
+    private static WebDriverWait wait;
+ 
+    public static void main(String[] args) {
+        try {
+            System.setProperty("webdriver.edge.driver", new File(EDGE_DRIVER_EXE).getAbsolutePath());
+ 
+            // Accept any unexpected alerts automatically (Edge/Selenium setting)
+            EdgeOptions options = new EdgeOptions();
+            options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
+ 
+            driver = new EdgeDriver(options);
+            wait   = new WebDriverWait(driver, Duration.ofSeconds(10));
+ 
+            String fileUrl = Paths.get(HTML_FILE_PATH).toUri().toString();
+            driver.get(fileUrl);
+            driver.manage().window().maximize();
+ 
+            // ===== 1) Enter
+            clickByXPath("//button[contains(.,'Enter')]");
+ 
+            // ===== 2) Details (age -> class inferred)
+            type(By.id("name"), "Teja");
+            WebElement age = waitVisible(By.id("age"));
+            age.clear();
+            age.sendKeys("17");                  // -> inferred class should become 11
+            sleep(200);
+ 
+            // Cache values right now (they will be hidden later)
+            String studentNameEntered = driver.findElement(By.id("name")).getAttribute("value");
+            String ageEntered         = driver.findElement(By.id("age")).getAttribute("value");
+ 
+            // state + exam
+            select(By.id("state"), "TS");
+            select(By.id("exam"),  "JEE");
+ 
+            // Cache exam & inferred class BEFORE leaving this section
+            String exam = driver.findElement(By.id("exam")).getAttribute("value");        // "JEE"
+            String klassStr = driver.findElement(By.id("klass")).getAttribute("value");   // "11"
+            int currentClass = Integer.parseInt(klassStr);
+ 
+            // Next -> Marks
+            clickByXPath("//section[@id='sec-details']//button[contains(.,'Save') and contains(.,'Next')]");
+ 
+            // ===== 3) Marks
+            waitVisible(By.id("marksContainer"));
+            for (int cls = 6; cls <= currentClass; cls++) {
+                String[] subjects = subjectsForClassAndExam(cls, exam);
+                for (String subj : subjects) {
+                    String id = "m-" + cls + "-" + subj;
+                    List<WebElement> inputs = driver.findElements(By.id(id));
+                    if (inputs.isEmpty()) continue;
+                    WebElement inp = inputs.get(0);
+                    scrollIntoView(inp);
+                    inp.clear();
+                    inp.sendKeys("82");
+                }
+            }
+ 
+            // Next -> Skills
+            clickByXPath("//section[@id='sec-marks']//button[contains(.,'Save') and contains(.,'Next')]");
+ 
+            // ===== 4) Skills
+            setRangeValue("skill-logic", 4);
+            setRangeValue("skill-discipline", 4);
+            setRangeValue("skill-confidence", 4);
+            setRangeValue("skill-consistency", 4);
+ 
+            // Evaluate
+            clickByXPath("//section[@id='sec-skills']//button[contains(.,'Evaluate')]");
+ 
+            // Read computed results
+            String score    = waitVisible(By.id("score")).getText().trim();
+            String category = waitVisible(By.id("category")).getText().trim();
+ 
+            // ===== 5) Booking
+            clickByXPath("//section[@id='sec-eval']//button[contains(.,'Proceed') and contains(.,'Booking')]");
+ 
+            // Date/time
+            LocalDate d = LocalDate.now().plusDays(1);
+            String dStr = d.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            type(By.id("bk-date"), dStr);
+            type(By.id("bk-time"), "16:00");
+ 
+            // Show available teachers and pick first
+            clickByXPath("//section[@id='sec-book']//button[contains(.,'Show Available Teachers')]");
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#teachers input[type='radio']")));
+            List<WebElement> radios = driver.findElements(By.cssSelector("#teachers input[type='radio']"));
+            if (radios.isEmpty()) throw new IllegalStateException("No teachers available at chosen time.");
+            WebElement first = radios.get(0);
+            scrollIntoView(first);
+            first.click();
+ 
+            // Add session
+            clickByXPath("//section[@id='sec-book']//button[contains(.,'Add Session')]");
+ 
+            // Wait for "Total: ₹"
+            WebElement bookingPanel = waitVisible(By.id("bookingResult"));
+            wait.until(ExpectedConditions.textToBePresentInElement(bookingPanel, "Total: ₹"));
+ 
+            // Submit registration (your HTML pops an alert)
+            clickByXPath("//div[@id='bookingResult']//button[contains(.,'Submit Registration')]");
+ 
+            // Accept alert "Registration submitted."
+            acceptAnyAlertQuietly(Duration.ofSeconds(3));
+ 
+            // ===== Print & PASS criteria
+            String bookingText = waitVisible(By.id("bookingResult")).getText();
+            String historyText = waitVisible(By.id("history")).getText();
+ 
+            System.out.println("\n=== STUDENT DETAILS ===");
+            System.out.println("Name      : " + studentNameEntered);
+            System.out.println("Age       : " + ageEntered);
+            System.out.println("Class     : " + klassStr + " (inferred)");
+            System.out.println("Exam      : " + exam);
+            System.out.println("Score     : " + score);
+            System.out.println("Category  : " + category);
+ 
+            System.out.println("\n=== BOOKED SESSION(S) ===");
+            System.out.println(bookingText);
+ 
+            System.out.println("\n=== REGISTRATION HISTORY (THIS RUN) ===");
+            System.out.println(historyText);
+ 
+            if (bookingText.contains("Total: ₹") && historyText.contains(studentNameEntered)) {
+                System.out.println("\n✅ TEST PASS — Booking and registration reflected in demo memory.");
+            } else {
+                throw new AssertionError("Booking/History did not reflect as expected.");
+            }
+ 
+            // Optional: show goodbye overlay
+            clickByXPath("//section[@id='sec-book']//button[contains(.,'Exit site')]");
+            waitVisible(By.id("goodbye"));
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
+            System.err.println("❌ TEST FAIL — " + t.getMessage());
+        }
+        finally {
+            if (driver != null) driver.quit();
+        }
+    }
+ 
+    // ===== helpers =====
+    private static void select(By by, String value) {
+        WebElement el = wait.until(ExpectedConditions.presenceOfElementLocated(by));
+        scrollIntoView(el);
+        new Select(el).selectByValue(value);
+    }
+ 
+    private static WebElement waitVisible(By by) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
+    }
+ 
+    private static void type(By by, String value) {
+        WebElement el = waitVisible(by);
+        scrollIntoView(el);
+        el.clear();
+        el.sendKeys(value);
+    }
+ 
+    private static void clickByXPath(String xpath) {
+        WebElement el = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+        scrollIntoView(el);
+        el.click();
+    }
+ 
+    private static void setRangeValue(String rangeId, int value) {
+        WebElement slider = waitVisible(By.id(rangeId));
+        ((JavascriptExecutor) driver).executeScript(
+                "const el = arguments[0]; el.value = arguments[1]; el.dispatchEvent(new Event('input',{bubbles:true}));",
+                slider, value
+        );
+        sleep(100);
+    }
+ 
+    private static void scrollIntoView(WebElement el) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", el);
+        sleep(50);
+    }
+ 
+    private static void sleep(long ms) {
+        try { Thread.sleep(ms); } catch (InterruptedException ignored) {}
+    }
+ 
+    private static void acceptAnyAlertQuietly(Duration timeout) {
+        try {
+            new WebDriverWait(driver, timeout).until(ExpectedConditions.alertIsPresent());
+            Alert a = driver.switchTo().alert();
+            System.out.println("[Alert] " + a.getText());
+            a.accept();
+            sleep(120);
+        } catch (TimeoutException | NoAlertPresentException ignored) {
+            // no alert -> ignore
+        }
+    }
+ 
+    private static String[] subjectsForClassAndExam(int cls, String exam) {
+        if (cls <= 7) return new String[]{"Mathematics", "Science"};
+        if ("NEET".equalsIgnoreCase(exam)) {
+            return new String[]{"Biology", "Physics", "Chemistry"};
+        }
+        return new String[]{"Maths", "Physics", "Chemistry"};
+    }
+}
+ 
