@@ -1,0 +1,30 @@
+package com.studentprep.test;
+
+import com.studentprep.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class StudyPlanServiceTest {
+
+    private Student mkStudent(StateBoard board) {
+        Student s = new Student();
+        s.setName("Test");
+        s.setAge(16);
+        s.setCurrentClass(10);
+        s.setStateBoard(board);
+        s.setTargetExam(TargetExam.EAPCET);
+        return s;
+    }
+
+    @Test
+    void prints_hours_and_focus_text() {
+        EvaluationResult excellent = new EvaluationResult(90, "Excellent");
+        try (TestIO io = new TestIO("")) {
+            // StudyPlanService prints to System.out → captured by TestIO
+            StudyPlanService.printPlan(excellent, mkStudent(StateBoard.TS));
+            String out = io.getOutput();
+            assertTrue(out.contains("Daily Study: 3 hours"));
+            assertTrue(out.contains("Speed-based revision"));
+        }
+    }
+}
