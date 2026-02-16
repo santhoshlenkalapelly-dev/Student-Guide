@@ -1,0 +1,27 @@
+package com.studentprep.test;
+
+import com.studentprep.AcademicRecord;
+import org.junit.jupiter.api.Test;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class AcademicRecordTest {
+
+    @Test
+    void marks_are_unmodifiable_from_outside() {
+        AcademicRecord ar = new AcademicRecord();
+        ar.addMark(10, "Maths", 95);
+        ar.addMark(10, "Physics", 90);
+
+        Map<Integer, Map<String, Integer>> outer = ar.getMarks();
+
+        // top-level unmodifiable
+        assertThrows(UnsupportedOperationException.class,
+                () -> outer.put(11, Map.of("Chemistry", 88)));
+
+        // inner-level unmodifiable
+        Map<String, Integer> inner = outer.get(10);
+        assertThrows(UnsupportedOperationException.class,
+                () -> inner.put("Chemistry", 88));
+    }
+}
