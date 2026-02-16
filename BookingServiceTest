@@ -1,0 +1,65 @@
+package com.studentprep.test;
+
+import com.studentprep.*;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class BookingServiceTest {
+
+    private Student makeStudent(String name, TargetExam exam) {
+        Student s = new Student();
+        s.setName(name);
+        s.setAge(18);
+        s.setCurrentClass(12);
+        s.setStateBoard(StateBoard.TS);
+        s.setTargetExam(exam);
+        s.setAcademicRecord(new AcademicRecord());
+        s.setSkills(new SkillProfile());
+        return s;
+    }
+
+    @Test
+    void bookOneSession_thenSameSlotUnavailableForSameStudent() {
+        Student s = makeStudent("TestUser1", TargetExam.JEE);
+        EvaluationResult r = new EvaluationResult(75, "Good");
+
+        TestConsoleIO io1 = new TestConsoleIO();
+        io1.dates.add(LocalDate.now().plusDays(1));
+        io1.times.add(LocalTime.of(16, 0));
+        io1.ints.add(1);     // choose first
+        io1.yesNo.add(false);
+
+        List<Session> first = BookingService.bookSessions(s, r, io1);
+        assertEquals(1, first.size());
+        Session s1 = first.get(0);
+
+        TestConsoleIO io2 = new TestConsoleIO();
+        io2.dates.add(s1.getDate());
+        io2.times.add(s1.getStartTime());
+        io2.yesNo.add(false); // decline "try different time"
+
+        List<Session> second = BookingService.bookSessions(s, r, io2);
+        assertEquals(0, second.size());
+    }
+
+    @Test
+    void bookDifferentTime_succeeds() {
+        Student s = makeStudent("TestUser2", TargetExam.NEET);
+        EvaluationResult r = new EvaluationResult(82, "Excellent");
+
+        TestConsoleIO io = new TestConsoleIO();
+        io.dates.add(LocalDate.now().plusDays(2));
+        io.times.add(LocalTime.of(15, 0));
+        io.ints.add(1);
+        io.yesNo.add(false);
+
+        List<Session> sessions = BookingService.bookSessions(s, r, io);
+        assertEquals(1, sessions.size());
+        assertEquals("TestUser2", sessions.get(0).getStudentName());
+    }
+}
