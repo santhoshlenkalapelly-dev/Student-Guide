@@ -1,0 +1,13 @@
+package com.studentprep.test;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+@Disabled("Disabled because the main program requires console/interactive input.")
+public class MainSmokeTest {
+
+    @Test
+    void runs_through_happy_path() {
+        // Intentionally disabled.
+    }
+}
