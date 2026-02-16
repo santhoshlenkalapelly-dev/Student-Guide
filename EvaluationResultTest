@@ -1,0 +1,17 @@
+package com.studentprep.test;
+
+import org.junit.jupiter.api.Test;
+
+import com.studentprep.EvaluationResult;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EvaluationResultTest {
+
+    @Test
+    void getters_return_values() {
+        EvaluationResult r = new EvaluationResult(78, "Good");
+        assertEquals(78, r.getScore());
+        assertEquals("Good", r.getCategory());
+    }
+}
