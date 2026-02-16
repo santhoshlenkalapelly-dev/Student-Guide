@@ -1,0 +1,38 @@
+package com.studentprep.test;
+
+import com.studentprep.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class InputServiceTest {
+
+    @Test
+    void age16_infersClass10() {
+        TestConsoleIO io = new TestConsoleIO();
+        io.names.add("Teja");
+        io.ints.add(16);                // age
+        io.boards.add(StateBoard.TS);
+        io.exams.add(TargetExam.JEE);
+
+        Student s = InputService.collectStudentDetails(io);
+
+        assertEquals("Teja", s.getName());
+        assertEquals(16, s.getAge());
+        assertEquals(10, s.getCurrentClass());
+        assertEquals(StateBoard.TS, s.getStateBoard());
+        assertEquals(TargetExam.JEE, s.getTargetExam());
+    }
+
+    @Test
+    void age17_infersClass11_age18Plus_infersClass12() {
+        TestConsoleIO io17 = new TestConsoleIO();
+        io17.names.add("A"); io17.ints.add(17); io17.boards.add(StateBoard.AP); io17.exams.add(TargetExam.NEET);
+        Student s17 = InputService.collectStudentDetails(io17);
+        assertEquals(11, s17.getCurrentClass());
+
+        TestConsoleIO io18 = new TestConsoleIO();
+        io18.names.add("B"); io18.ints.add(18); io18.boards.add(StateBoard.TS); io18.exams.add(TargetExam.EAPCET);
+        Student s18 = InputService.collectStudentDetails(io18);
+        assertEquals(12, s18.getCurrentClass());
+    }
+}
