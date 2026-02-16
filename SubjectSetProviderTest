@@ -1,0 +1,32 @@
+package com.studentprep.test;
+
+import com.studentprep.SubjectSetProvider;
+import com.studentprep.TargetExam;
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class SubjectSetProviderTest {
+    @Test
+    void class6_anyExam_hasOnlyMathematicsAndScience() {
+        assertEquals(List.of("Mathematics", "Science"),
+                SubjectSetProvider.subjectsForClassAndExam(6, TargetExam.NEET));
+        assertEquals(List.of("Mathematics", "Science"),
+                SubjectSetProvider.subjectsForClassAndExam(6, TargetExam.JEE));
+    }
+    @Test
+    void class7_anyExam_hasOnlyMathematicsAndScience() {
+        assertEquals(List.of("Mathematics", "Science"),
+                SubjectSetProvider.subjectsForClassAndExam(7, TargetExam.EAPCET));
+    }
+    @Test
+    void class8_NEET_hasBioPhyChem() {
+        assertEquals(List.of("Biology", "Physics", "Chemistry"),
+                SubjectSetProvider.subjectsForClassAndExam(8, TargetExam.NEET));
+    }
+    @Test
+    void class8_JEE_hasMathsPhyChem() {
+        assertEquals(List.of("Maths", "Physics", "Chemistry"),
+                SubjectSetProvider.subjectsForClassAndExam(8, TargetExam.JEE));
+    }
+}
