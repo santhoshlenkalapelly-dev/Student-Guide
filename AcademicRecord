@@ -1,0 +1,22 @@
+package com.studentprep;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class AcademicRecord {
+    private final Map<Integer, Map<String, Integer>> marks = new HashMap<>();
+
+    public void addMark(int cls, String subject, int mark) {
+        marks.putIfAbsent(cls, new HashMap<>());
+        marks.get(cls).put(subject, mark);
+    }
+
+    public Map<Integer, Map<String, Integer>> getMarks() {
+        // Return an unmodifiable deep copy to prevent accidental mutation
+        Map<Integer, Map<String, Integer>> copy = new HashMap<>();
+        for (var e : marks.entrySet()) {
+            copy.put(e.getKey(), Map.copyOf(e.getValue()));
+        }
+        return Map.copyOf(copy);
+    }
+}
