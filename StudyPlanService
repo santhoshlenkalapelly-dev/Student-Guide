@@ -1,0 +1,13 @@
+package com.studentprep;
+
+public class StudyPlanService {
+    public static void printPlan(EvaluationResult r, Student s) {
+        System.out.println("\n📅 Your Plan:");
+        switch (r.getCategory()) {
+            case "Excellent": System.out.println("• Daily Study: 3 hours"); break;
+            case "Good":      System.out.println("• Daily Study: 4 hours"); break;
+            default:          System.out.println("• Daily Study: 5 hours");
+        }
+        System.out.println("• " + s.getStateBoard().getFocusMsg());
+    }
+}
