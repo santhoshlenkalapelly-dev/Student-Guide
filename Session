@@ -1,0 +1,40 @@
+package com.studentprep;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class Session {
+    private final long id;
+    private final String studentName;
+    private final int teacherId;
+    private final String teacherName;
+    private final Subject subject;
+    private final LocalDate date;
+    private final LocalTime startTime;
+    private final int durationMinutes;
+    private final int feeInr;
+
+    public Session(long id, String studentName, int teacherId, String teacherName,
+                   Subject subject, LocalDate date, LocalTime startTime,
+                   int durationMinutes, int feeInr) {
+        this.id = id;
+        this.studentName = studentName;
+        this.teacherId = teacherId;
+        this.teacherName = teacherName;
+        this.subject = subject;
+        this.date = date;
+        this.startTime = startTime;
+        this.durationMinutes = durationMinutes;
+        this.feeInr = feeInr;
+    }
+
+    public long getId() { return id; }
+    public String getStudentName() { return studentName; }
+    public int getTeacherId() { return teacherId; }
+    public String getTeacherName() { return teacherName; }
+    public Subject getSubject() { return subject; }
+    public LocalDate getDate() { return date; }
+    public LocalTime getStartTime() { return startTime; }
+    public int getDurationMinutes() { return durationMinutes; }
+    public int getFeeInr() { return feeInr; }
+}
