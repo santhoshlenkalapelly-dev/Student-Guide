@@ -1,0 +1,51 @@
+package com.studentprep;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class BookingRepository {
+    private static final BookingRepository INSTANCE = new BookingRepository();
+    public static BookingRepository getInstance() { return INSTANCE; }
+
+    private final List<Session> sessions = new ArrayList<>();
+    private long seq = 1L;
+
+    private BookingRepository() {}
+
+    public synchronized Session save(Session s) {
+        sessions.add(s);
+        return s;
+    }
+
+    public synchronized long nextId() { return seq++; }
+
+    public synchronized List<Session> findByStudent(String studentName) {
+        return sessions.stream()
+                .filter(s -> s.getStudentName().equalsIgnoreCase(studentName))
+                .toList();
+    }
+
+    public synchronized boolean isTeacherFree(int teacherId, LocalDate date, LocalTime start, int durationMinutes) {
+        return sessions.stream().noneMatch(s ->
+                s.getTeacherId() == teacherId &&
+                s.getDate().equals(date) &&
+                overlaps(s.getStartTime(), s.getDurationMinutes(), start, durationMinutes));
+    }
+
+    public synchronized boolean isStudentFree(String studentName, LocalDate date, LocalTime start, int durationMinutes) {
+        return sessions.stream().noneMatch(s ->
+                s.getStudentName().equalsIgnoreCase(studentName) &&
+                s.getDate().equals(date) &&
+                overlaps(s.getStartTime(), s.getDurationMinutes(), start, durationMinutes));
+    }
+
+    private boolean overlaps(LocalTime aStart, int aMin, LocalTime bStart, int bMin) {
+        var aEnd = aStart.plusMinutes(aMin);
+        var bEnd = bStart.plusMinutes(bMin);
+        return !aEnd.isBefore(bStart) && !bEnd.isBefore(aStart);
+    }
+
+    public synchronized List<Session> all() { return List.copyOf(sessions); }
+}
