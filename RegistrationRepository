@@ -1,0 +1,17 @@
+package com.studentprep;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public final class RegistrationRepository {
+    private static final RegistrationRepository INSTANCE = new RegistrationRepository();
+    public static RegistrationRepository getInstance() { return INSTANCE; }
+
+    private final List<Registration> regs = new ArrayList<>();
+
+    private RegistrationRepository() {}
+
+    public synchronized void save(Registration r) { regs.add(r); }
+
+    public synchronized List<Registration> findAll() { return List.copyOf(regs); }
+}
