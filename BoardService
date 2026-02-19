@@ -1,0 +1,11 @@
+package com.studentprep;
+
+public class BoardService {
+    public static void printBoardInfo(StateBoard sb) {
+        System.out.println("\n📘 State Board Details:");
+        System.out.println("State      : " + sb.getStateName());
+        System.out.println("Board Name : " + sb.getBoardName());
+        System.out.println("Board Style: " + sb.getStyleMsg());
+        System.out.println("Focus      : " + sb.getFocusMsg());
+    }
+}
