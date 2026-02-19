@@ -1,0 +1,17 @@
+package com.studentprep;
+
+public enum TargetExam {
+    EAPCET, JEE, NEET;
+
+    public static TargetExam parse(String input) {
+        if (input == null) throw new IllegalArgumentException("Target exam is required.");
+        String key = input.trim().replaceAll("\\s+", "").toUpperCase();
+        switch (key) {
+            case "EAPCET": return EAPCET;
+            case "JEE":    return JEE;
+            case "NEET":   return NEET;
+            default:
+                throw new IllegalArgumentException("Unknown target exam: " + input);
+        }
+    }
+}
