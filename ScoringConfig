@@ -1,0 +1,11 @@
+package com.studentprep;
+
+public final class ScoringConfig {
+    private ScoringConfig() {}
+
+    public static final double ACADEMIC_WEIGHT = 0.70;
+    public static final double SKILL_WEIGHT    = 0.30;
+
+    public static final int EXCELLENT_CUTOFF = 80;
+    public static final int GOOD_CUTOFF      = 60;
+}
