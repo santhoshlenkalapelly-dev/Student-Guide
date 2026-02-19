@@ -1,0 +1,26 @@
+package com.studentprep;
+
+import java.util.List;
+
+public class AcademicService {
+    public static final int MIN_CLASS = 6;
+
+    public static AcademicRecord collectMarks(Student s, ConsoleIO io) {
+        AcademicRecord ar = new AcademicRecord();
+
+        io.println("\n📚 Academic Details (" + s.getStateBoard().getBoardName() + ")");
+        int start = MIN_CLASS;
+        if (s.getCurrentClass() < start) {
+            throw new IllegalArgumentException("Current class must be >= " + start);
+        }
+
+        for (int cls = start; cls <= s.getCurrentClass(); cls++) {
+            io.println("\nClass " + cls + " Marks (0–100):");
+            List<String> subjects = SubjectSetProvider.subjectsForClassAndExam(cls, s.getTargetExam());
+            for (String subj : subjects) {
+                ar.addMark(cls, subj, io.readMark(subj));
+            }
+        }
+        return ar;
+    }
+}
