@@ -1,0 +1,38 @@
+package com.studentprep;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+public final class SubjectSetProvider {
+    private SubjectSetProvider() {}
+
+    /** Subjects to prompt for a given class (6–12) and exam */
+    public static List<String> subjectsForClassAndExam(int cls, TargetExam exam) {
+        List<String> result = new ArrayList<>();
+        if (cls <= 7) {
+            result.add(Subject.MATHEMATICS.label());
+            result.add(Subject.SCIENCE.label());
+            return result;
+        }
+        if (exam == TargetExam.NEET) {
+            result.add(Subject.BIOLOGY.label());
+            result.add(Subject.PHYSICS.label());
+            result.add(Subject.CHEMISTRY.label());
+        } else {
+            result.add(Subject.MATHS.label());
+            result.add(Subject.PHYSICS.label());
+            result.add(Subject.CHEMISTRY.label());
+        }
+        return result;
+    }
+
+    /** Subject focus just by exam (used for teacher availability) */
+    public static Set<Subject> focusSubjectsForExam(TargetExam exam) {
+        if (exam == TargetExam.NEET) {
+            return EnumSet.of(Subject.BIOLOGY, Subject.PHYSICS, Subject.CHEMISTRY);
+        }
+        return EnumSet.of(Subject.MATHS, Subject.PHYSICS, Subject.CHEMISTRY);
+    }
+}
