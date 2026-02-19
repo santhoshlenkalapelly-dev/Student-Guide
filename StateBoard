@@ -1,0 +1,63 @@
+package com.studentprep;
+
+public enum StateBoard {
+
+    TS(
+        "Telangana",
+        "TSBIE",
+        "Telangana board syllabus focused on speed & accuracy.",
+        "Focus: Speed-based revision & frequent tests."
+    ),
+
+    AP(
+        "Andhra Pradesh",
+        "BIEAP",
+        "Andhra Pradesh board syllabus focused on conceptual depth.",
+        "Focus: Conceptual clarity & descriptive practice."
+    );
+
+    private final String stateName;
+    private final String boardName;
+    private final String styleMsg;
+    private final String focusMsg;
+
+    StateBoard(String stateName, String boardName, String styleMsg, String focusMsg) {
+        this.stateName = stateName;
+        this.boardName = boardName;
+        this.styleMsg = styleMsg;
+        this.focusMsg = focusMsg;
+    }
+
+    public String getStateName() { return stateName; }
+    public String getBoardName() { return boardName; }
+    public String getStyleMsg()  { return styleMsg; }
+    public String getFocusMsg()  { return focusMsg; }
+
+    public static StateBoard parse(String input) {
+        if (input == null) throw new IllegalArgumentException("State is required.");
+
+        // Normalize: uppercase + remove everything except A‑Z
+        String key = input.trim()
+                .toUpperCase(java.util.Locale.ROOT)
+                .replaceAll("[^A-Z]", "");
+
+        switch (key) {
+
+            // Telangana
+            case "TS":
+            case "TELANGANA":
+            case "TELANGANASTATE":
+                return TS;
+
+            // Andhra Pradesh
+            case "AP":
+            case "ANDHRA":
+            case "ANDHRAPRADESH":
+            case "APSTATE":
+                return AP;
+
+            default:
+                throw new IllegalArgumentException("Unknown state: " + input);
+        }
+    }
+}
