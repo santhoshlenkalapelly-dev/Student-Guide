@@ -1,0 +1,152 @@
+package com.studentprep;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
+import java.util.Scanner;
+
+public class ConsoleIO {
+    private final Scanner scanner = new Scanner(System.in);
+
+    // ====== Printing helpers ======
+    public void println(String s) { System.out.println(s); }
+    public void print(String s) { System.out.print(s); }
+    public void line() { System.out.println("─".repeat(80)); }
+    public void line(char ch) { System.out.println((ch + "").repeat(80)); }
+
+    public void showBanner() {
+        line();
+        System.out.println("🎓 Welcome to S T U D E N T  G U I D E");
+        line();
+    }
+
+    public void section(String title) {
+        line();
+        System.out.println("• " + title);
+        line();
+    }
+
+    public void showFooter() {
+        line();
+        System.out.println("🙏 Thank you for using STUDENT GUIDE. Visit again!");
+        line();
+    }
+
+    // ====== Validated inputs ======
+    public String readNonEmpty(String prompt) {
+        while (true) {
+            print(prompt);
+            String line = scanner.nextLine().trim();
+            if (!line.isEmpty()) return line;
+            System.out.println("Input cannot be empty. Please try again.");
+        }
+    }
+
+    /** Strict name validation: letters + space + . - ' ; must start with a letter; no digits */
+    public String readStudentName(String prompt) {
+        while (true) {
+            String name = readNonEmpty(prompt);
+            if (name.matches(".*\\d.*")) {
+                System.out.println("Name cannot contain digits. Please try again.");
+                continue;
+            }
+            if (!name.matches("^[A-Za-z][A-Za-z .'-]*$")) {
+                System.out.println("Use letters, spaces, dots, hyphens, apostrophes (e.g., A. P. J. Abdul-Kalam).");
+                continue;
+            }
+            return name;
+        }
+    }
+
+    public int readIntInRange(String prompt, int min, int max) {
+        while (true) {
+            print(prompt);
+            String line = scanner.nextLine().trim();
+            try {
+                int val = Integer.parseInt(line);
+                if (val < min || val > max) {
+                    System.out.printf("Please enter a number between %d and %d.%n", min, max);
+                    continue;
+                }
+                return val;
+            } catch (NumberFormatException ex) {
+                System.out.println("Only digits are allowed here. Please enter a valid number.");
+            }
+        }
+    }
+
+    public int readMark(String subject) {
+        return readIntInRange(subject + ": ", 0, 100);
+    }
+
+    public StateBoard readStateBoard(String prompt) {
+        while (true) {
+            print(prompt);
+            String input = scanner.nextLine();
+            try {
+                return StateBoard.parse(input);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage() + " Allowed: TS/Telangana or AP/Andhra.");
+            }
+        }
+    }
+
+    public TargetExam readTargetExam(String prompt) {
+        while (true) {
+            print(prompt);
+            String input = scanner.nextLine();
+            try {
+                return TargetExam.parse(input);
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage() + " Allowed: EAPCET / JEE / NEET.");
+            }
+        }
+    }
+
+    public java.time.LocalDate readDate(String prompt) {
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE;
+        while (true) {
+            print(prompt);
+            String s = scanner.nextLine().trim();
+            try {
+                LocalDate d = LocalDate.parse(s, fmt);
+                if (d.isBefore(LocalDate.now())) {
+                    System.out.println("Date cannot be in the past. Use YYYY-MM-DD.");
+                    continue;
+                }
+                return d;
+            } catch (DateTimeParseException ex) {
+                System.out.println("Invalid date format. Use YYYY-MM-DD (e.g., 2026-02-11).");
+            }
+        }
+    }
+
+    public LocalTime readTime(String prompt) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm", Locale.ROOT);
+        while (true) {
+            print(prompt);
+            String s = scanner.nextLine().trim();
+            try {
+                return LocalTime.parse(s, fmt);
+            } catch (DateTimeParseException ex) {
+                System.out.println("Invalid time format. Use 24-hour HH:mm (e.g., 16:00).");
+            }
+        }
+    }
+
+    public boolean readYesNo(String prompt) {
+        while (true) {
+            print(prompt);
+            String s = scanner.nextLine().trim().toLowerCase(Locale.ROOT);
+            if (s.equals("y") || s.equals("yes")) return true;
+            if (s.equals("n") || s.equals("no")) return false;
+            System.out.println("Please enter Y or N.");
+        }
+    }
+
+    public void close() {
+        try { scanner.close(); } catch (Exception ignored) {}
+    }
+}
