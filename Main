@@ -1,0 +1,84 @@
+package com.studentprep;
+
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        ConsoleIO io = new ConsoleIO();
+        io.showBanner(); // 👈 Opening decoration
+        try {
+            boolean newReg = true;
+            while (newReg) {
+                io.section("Student Details");
+                Student student = InputService.collectStudentDetails(io);
+
+                io.section("Academic Marks Entry");
+                AcademicRecord record = AcademicService.collectMarks(student, io);
+                student.setAcademicRecord(record);
+
+                io.section("Skill Self-Assessment");
+                student.setSkills(InputService.collectSkills(io));
+
+                io.section("Evaluation");
+                EvaluationResult result = EvaluationService.evaluate(student);
+                io.println("\n✅ Final Score: " + result.getScore());
+                io.println("✅ Category   : " + result.getCategory());
+
+                io.section("Personalized Study Plan");
+                StudyPlanService.printPlan(result, student);
+
+                io.section("Book Sessions");
+                List<Session> sessions = BookingService.bookSessions(student, result, io);
+
+                // Build & save registration (ephemeral/in-memory)
+                int totalAmount = sessions.size() * BillingConfig.SESSION_FEE_INR;
+                Registration reg = new Registration(
+                        new Registration.StudentSnapshot(student),
+                        result,
+                        sessions,
+                        totalAmount
+                );
+                RegistrationRepository.getInstance().save(reg);
+
+                // Show summaries
+                io.section("Registration Summary (This Student)");
+                printRegistrationSummary(reg, io);
+
+                io.section("All Registrations (This Run)");
+                RegistrationRepository.getInstance().findAll()
+                        .forEach(rg -> printRegistrationSummaryLine(rg, io));
+
+                newReg = io.readYesNo("\nStart a NEW registration? (Y/N): ");
+            }
+        } catch (Exception ex) {
+            System.err.println("An unexpected error occurred: " + ex.getMessage());
+        } finally {
+            io.showFooter(); // 👈 Closing decoration
+            io.close();
+        }
+    }
+
+    private static void printRegistrationSummary(Registration r, ConsoleIO io) {
+        io.println("Student   : " + r.getStudent().name + " | Class " + r.getStudent().currentClass
+                + " | " + r.getStudent().board + " | " + r.getStudent().exam);
+        io.println("Result    : Score " + r.getEvaluation().getScore() + " (" + r.getEvaluation().getCategory() + ")");
+        if (r.getSessions().isEmpty()) {
+            io.println("Sessions  : None");
+        } else {
+            io.println("Sessions  :");
+            int i = 1;
+            for (Session s : r.getSessions()) {
+                io.println("  " + (i++) + ") " + s.getDate() + " " + s.getStartTime()
+                        + " — " + s.getTeacherName() + " (" + s.getSubject().label() + "), ₹" + s.getFeeInr());
+            }
+        }
+        io.println("Total     : ₹" + r.getTotalAmountInr());
+    }
+
+    private static void printRegistrationSummaryLine(Registration r, ConsoleIO io) {
+        io.println("- " + r.getStudent().name
+                + " | Score " + r.getEvaluation().getScore()
+                + " | Sessions " + r.getSessions().size()
+                + " | Total ₹" + r.getTotalAmountInr());
+    }
+}
