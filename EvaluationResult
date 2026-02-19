@@ -1,0 +1,14 @@
+package com.studentprep;
+
+public class EvaluationResult {
+    private final int score;
+    private final String category;
+
+    public EvaluationResult(int score, String category) {
+        this.score = score;
+        this.category = category;
+    }
+
+    public int getScore() { return score; }
+    public String getCategory() { return category; }
+}
