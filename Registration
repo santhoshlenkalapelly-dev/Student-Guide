@@ -1,0 +1,36 @@
+package com.studentprep;
+
+import java.util.List;
+
+public class Registration {
+    public static class StudentSnapshot {
+        public final String name;
+        public final String board;
+        public final String exam;
+        public final int currentClass;
+
+        public StudentSnapshot(Student s) {
+            this.name = s.getName();
+            this.board = s.getStateBoard().getBoardName();
+            this.exam = s.getTargetExam().name();
+            this.currentClass = s.getCurrentClass();
+        }
+    }
+
+    private final StudentSnapshot student;
+    private final EvaluationResult evaluation;
+    private final List<Session> sessions;
+    private final int totalAmountInr;
+
+    public Registration(StudentSnapshot student, EvaluationResult evaluation, List<Session> sessions, int totalAmountInr) {
+        this.student = student;
+        this.evaluation = evaluation;
+        this.sessions = List.copyOf(sessions);
+        this.totalAmountInr = totalAmountInr;
+    }
+
+    public StudentSnapshot getStudent() { return student; }
+    public EvaluationResult getEvaluation() { return evaluation; }
+    public List<Session> getSessions() { return sessions; }
+    public int getTotalAmountInr() { return totalAmountInr; }
+}
