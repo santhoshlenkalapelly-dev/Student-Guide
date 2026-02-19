@@ -1,0 +1,36 @@
+package com.studentprep;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
+public final class TeacherCatalog {
+    private static final List<Teacher> TEACHERS = new ArrayList<>();
+
+    static {
+        var start = LocalTime.of(9, 0);
+        var end   = LocalTime.of(19, 0);
+
+        // Maths
+        TEACHERS.add(new Teacher(1, "Srinivas", EnumSet.of(Subject.MATHS), start, end));
+        TEACHERS.add(new Teacher(2, "Ananya",   EnumSet.of(Subject.MATHS), start, end));
+        TEACHERS.add(new Teacher(3, "Karan",    EnumSet.of(Subject.MATHS), start, end));
+
+        // Physics
+        TEACHERS.add(new Teacher(4, "Kavya",    EnumSet.of(Subject.PHYSICS), start, end));
+        TEACHERS.add(new Teacher(5, "Nitin",    EnumSet.of(Subject.PHYSICS), start, end));
+
+        // Chemistry
+        TEACHERS.add(new Teacher(6, "Rahman",   EnumSet.of(Subject.CHEMISTRY), start, end));
+        TEACHERS.add(new Teacher(7, "Priya",    EnumSet.of(Subject.CHEMISTRY), start, end));
+
+        // Biology
+        TEACHERS.add(new Teacher(8, "Meera",    EnumSet.of(Subject.BIOLOGY), start, end));
+        TEACHERS.add(new Teacher(9, "Arjun",    EnumSet.of(Subject.BIOLOGY), start, end));
+    }
+
+    private TeacherCatalog() {}
+
+    public static List<Teacher> all() { return TEACHERS; }
+}
