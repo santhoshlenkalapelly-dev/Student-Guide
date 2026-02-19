@@ -1,0 +1,26 @@
+package com.studentprep;
+
+public class Student {
+    private String name;
+    private int age;
+    private int currentClass; // 10, 11, 12
+    private StateBoard stateBoard;
+    private TargetExam targetExam;
+    private AcademicRecord academicRecord;
+    private SkillProfile skills;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+    public int getCurrentClass() { return currentClass; }
+    public void setCurrentClass(int currentClass) { this.currentClass = currentClass; }
+    public StateBoard getStateBoard() { return stateBoard; }
+    public void setStateBoard(StateBoard stateBoard) { this.stateBoard = stateBoard; }
+    public TargetExam getTargetExam() { return targetExam; }
+    public void setTargetExam(TargetExam targetExam) { this.targetExam = targetExam; }
+    public AcademicRecord getAcademicRecord() { return academicRecord; }
+    public void setAcademicRecord(AcademicRecord academicRecord) { this.academicRecord = academicRecord; }
+    public SkillProfile getSkills() { return skills; }
+    public void setSkills(SkillProfile skills) { this.skills = skills; }
+}
