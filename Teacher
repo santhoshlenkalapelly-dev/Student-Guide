@@ -1,0 +1,36 @@
+package com.studentprep;
+
+import java.time.LocalTime;
+import java.util.Set;
+
+public class Teacher {
+    private final int id;
+    private final String name;
+    private final Set<Subject> subjects;
+    private final LocalTime workStart;  // inclusive
+    private final LocalTime workEnd;    // exclusive
+
+    public Teacher(int id, String name, Set<Subject> subjects, LocalTime workStart, LocalTime workEnd) {
+        this.id = id;
+        this.name = name;
+        this.subjects = subjects;
+        this.workStart = workStart;
+        this.workEnd = workEnd;
+    }
+
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public Set<Subject> getSubjects() { return subjects; }
+    public LocalTime getWorkStart() { return workStart; }
+    public LocalTime getWorkEnd() { return workEnd; }
+
+    public boolean isWithinWorkingHours(LocalTime start, int durationMinutes) {
+        var end = start.plusMinutes(durationMinutes);
+        return !start.isBefore(workStart) && !end.isAfter(workEnd);
+    }
+
+    public String subjectsLabel() {
+        return subjects.stream().map(Subject::label).distinct()
+                .reduce((a,b) -> a + ", " + b).orElse("-");
+    }
+}
