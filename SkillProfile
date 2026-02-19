@@ -1,0 +1,17 @@
+package com.studentprep;
+
+public class SkillProfile {
+    private int logic;
+    private int discipline;
+    private int confidence;
+    private int consistency;
+
+    public int getLogic() { return logic; }
+    public void setLogic(int logic) { this.logic = logic; }
+    public int getDiscipline() { return discipline; }
+    public void setDiscipline(int discipline) { this.discipline = discipline; }
+    public int getConfidence() { return confidence; }
+    public void setConfidence(int confidence) { this.confidence = confidence; }
+    public int getConsistency() { return consistency; }
+    public void setConsistency(int consistency) { this.consistency = consistency; }
+}
