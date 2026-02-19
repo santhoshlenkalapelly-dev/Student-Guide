@@ -1,0 +1,88 @@
+package com.studentprep;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class BookingService {
+
+    public static List<Session> bookSessions(Student s, EvaluationResult r, ConsoleIO io) {
+        List<Session> booked = new ArrayList<>();
+        BookingRepository repo = BookingRepository.getInstance();
+
+        io.println("\n🎯 Booking — pick your preferred date & time first.");
+
+        boolean more = true;
+        while (more) {
+            LocalDate date = io.readDate("Select Date (YYYY-MM-DD): ");
+            LocalTime time = io.readTime("Select Time (e.g. 16:00): ");
+
+            Set<Subject> focus = SubjectSetProvider.focusSubjectsForExam(s.getTargetExam());
+            List<Teacher> available = TeacherCatalog.all().stream()
+                    .filter(t -> t.getSubjects().stream().anyMatch(focus::contains))
+                    .filter(t -> t.isWithinWorkingHours(time, BillingConfig.DEFAULT_SLOT_MINUTES))
+                    .filter(t -> repo.isTeacherFree(t.getId(), date, time, BillingConfig.DEFAULT_SLOT_MINUTES))
+                    .filter(t -> repo.isStudentFree(s.getName(), date, time, BillingConfig.DEFAULT_SLOT_MINUTES))
+                    .sorted(Comparator.comparing(Teacher::getName))
+                    .collect(Collectors.toList());
+
+            if (available.isEmpty()) {
+                io.println("\n⚠️  No teachers available at that time. Try another time.");
+                more = io.readYesNo("Try a different time? (Y/N): ");
+                continue;
+            }
+
+            io.println("\n🏫 Available Teachers at " + date + " " + time + ":");
+            for (int i = 0; i < available.size(); i++) {
+                Teacher t = available.get(i);
+                io.println((i + 1) + ". " + t.getName() + " — " + t.subjectsLabel());
+            }
+            int choice = io.readIntInRange("Choose Teacher (1–" + available.size() + "): ", 1, available.size());
+            Teacher chosen = available.get(choice - 1);
+
+            // Pick one relevant subject if teacher teaches multiple
+            Subject subject = chosen.getSubjects().stream().filter(focus::contains).findFirst()
+                    .orElse(chosen.getSubjects().stream().findFirst().orElse(Subject.MATHS));
+
+            long id = repo.nextId();
+            Session session = new Session(
+                    id,
+                    s.getName(),
+                    chosen.getId(),
+                    chosen.getName(),
+                    subject,
+                    date,
+                    time,
+                    BillingConfig.DEFAULT_SLOT_MINUTES,
+                    BillingConfig.SESSION_FEE_INR
+            );
+            repo.save(session);
+            booked.add(session);
+
+            io.println("\n✅ Booking Confirmed!");
+            io.println("• Teacher : " + chosen.getName());
+            io.println("• Subject : " + subject.label());
+            io.println("• Date    : " + date);
+            io.println("• Time    : " + time);
+            io.println("• Fee     : ₹" + BillingConfig.SESSION_FEE_INR);
+
+            more = io.readYesNo("\nBook another session for this student? (Y/N): ");
+        }
+
+        printMotivation(r.getCategory());
+        return booked;
+    }
+
+    private static void printMotivation(String category) {
+        System.out.println("\n💡 Motivation:");
+        switch (category) {
+            case "Excellent": System.out.println("You are ready to lead. Aim higher!"); break;
+            case "Good": System.out.println("Consistency will take you to the top!"); break;
+            default: System.out.println("Every expert was once a beginner.");
+        }
+    }
+}
