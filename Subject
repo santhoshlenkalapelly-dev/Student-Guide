@@ -1,0 +1,14 @@
+package com.studentprep;
+
+public enum Subject {
+    MATHEMATICS("Mathematics"),   // for classes 6–7
+    SCIENCE("Science"),           // for classes 6–7
+    MATHS("Maths"),               // for >= 8 engineering exams
+    PHYSICS("Physics"),
+    CHEMISTRY("Chemistry"),
+    BIOLOGY("Biology");
+
+    private final String label;
+    Subject(String label) { this.label = label; }
+    public String label() { return label; }
+}
