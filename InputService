@@ -1,0 +1,51 @@
+package com.studentprep;
+
+public class InputService {
+
+    public static Student collectStudentDetails(ConsoleIO io) {
+        Student s = new Student();
+
+        // Name (validated: no digits, allowed punctuation)
+        s.setName(io.readStudentName("Student Name: "));
+
+        // Age (16–25)
+        int age = io.readIntInRange("Age (16–25): ", 16, 25);
+        s.setAge(age);
+
+        // ✅ Infer current class from age (no user prompt)
+        int inferredClass = inferClassFromAge(age);
+        s.setCurrentClass(inferredClass);
+        io.println(" Current Class: " + inferredClass + " (based on age " + age + ")");
+
+        // State board
+        StateBoard board = io.readStateBoard("State (TS / AP): ");
+        s.setStateBoard(board);
+        BoardService.printBoardInfo(board);
+
+        // Target exam
+        TargetExam exam = io.readTargetExam("Target Exam (EAPCET / JEE / NEET): ");
+        s.setTargetExam(exam);
+
+        return s;
+    }
+
+    /**
+     * Very simple mapping:
+     * 16 -> 10th, 17 -> 11th, >=18 -> 12th
+     */
+    private static int inferClassFromAge(int age) {
+        if (age <= 16) return 10;
+        if (age == 17) return 11;
+        return 12;
+    }
+
+    public static SkillProfile collectSkills(ConsoleIO io) {
+        SkillProfile k = new SkillProfile();
+        io.println("\nRate your skills from 1 (low) to 5 (high):");
+        k.setLogic(io.readIntInRange("Logical Thinking (1–5): ", 1, 5));
+        k.setDiscipline(io.readIntInRange("Discipline (1–5): ", 1, 5));
+        k.setConfidence(io.readIntInRange("Confidence (1–5): ", 1, 5));
+        k.setConsistency(io.readIntInRange("Consistency (1–5): ", 1, 5));
+        return k;
+    }
+}
