@@ -1,0 +1,33 @@
+package com.studentprep;
+
+public class EvaluationService {
+    public static EvaluationResult evaluate(Student s) {
+        int total = 0;
+        int count = 0;
+
+        for (var cls : s.getAcademicRecord().getMarks().values()) {
+            for (int m : cls.values()) {
+                total += m;
+                count++;
+            }
+        }
+
+        double academicAvg = (count == 0) ? 0.0 : (double) total / count;
+
+        SkillProfile k = s.getSkills();
+        int skillSum = k.getLogic() + k.getDiscipline() + k.getConfidence() + k.getConsistency();
+        double skillScore = skillSum * 5.0;
+
+        int finalScore = (int) Math.round(
+                academicAvg * ScoringConfig.ACADEMIC_WEIGHT +
+                skillScore  * ScoringConfig.SKILL_WEIGHT
+        );
+
+        String category;
+        if (finalScore >= ScoringConfig.EXCELLENT_CUTOFF)      category = "Excellent";
+        else if (finalScore >= ScoringConfig.GOOD_CUTOFF)       category = "Good";
+        else                                                    category = "Average";
+
+        return new EvaluationResult(finalScore, category);
+    }
+}
